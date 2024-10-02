@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "sim8086"
+version = "0.1.0"
+description = "Simulation of an Intel 8086 CPU"
+authors = ["Ivan Toriya <ivantoriya@gmail.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
