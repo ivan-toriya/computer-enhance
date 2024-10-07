@@ -3,8 +3,8 @@ import pytest
 import subprocess
 
 
-from sim8086.part1.instruction_decode import decode
-from sim8086.part1.operations import mov
+from sim8086.src.instruction_decode import decode
+from sim8086.src.operations import mov
 
 
 @pytest.fixture(
@@ -12,12 +12,13 @@ from sim8086.part1.operations import mov
     params=[
         "listing_0037_single_register_mov.asm",
         "listing_0038_many_register_mov.asm",
+        "listing_0039_more_movs.asm",
     ],
 )
 def assembled_instruction_path(request, tmp_path_factory):
     file: Path = tmp_path_factory.mktemp("data") / request.param
     try:
-        subprocess.run(["nasm", f"sim8086/tests/data/{request.param}", "-o", file], check=True)
+        subprocess.run(["nasm", f"tests/data/{request.param}", "-o", file], check=True)
     except FileNotFoundError:
         print("We're using `nasm` to assemble the .asm files. Have you installed it and added on PATH?")
         raise
@@ -77,6 +78,6 @@ def test_mov_bx_cx(mov_bx_cx):
 
 def test_mov_mod_not_implemented(mov_cx_bx):
     d, w, mod, reg, rm = mov_cx_bx
-    mod = 0b00
+    mod = 0b100
     with pytest.raises(NotImplementedError):
         mov(d, w, mod, reg, rm)
