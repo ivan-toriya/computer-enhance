@@ -20,7 +20,7 @@ bits 16
 mov si, bx
 mov dh, al
 
-; ; 8-bit immediate-to-register
+; 8-bit immediate-to-register
 ; mov cl, 12
 ; mov ch, -12
 
@@ -35,11 +35,11 @@ mov al, [bx + si]
 mov bx, [bp + di]
 mov dx, [bp]
 
-; ; Source address calculation plus 8-bit displacement
-; mov ah, [bx + si + 4]
+; Source address calculation plus 8-bit displacement
+mov ah, [bx + si + 4]
 
-; ; Source address calculation plus 16-bit displacement
-; mov al, [bx + si + 4999]
+; Source address calculation plus 16-bit displacement
+mov al, [bx + si + 4999]
 
 ; Dest address calculation
 mov [bx + di], cx

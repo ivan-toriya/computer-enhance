@@ -12,18 +12,18 @@ REG = {
 
 # R/M (Register/Memory) Field Encoding
 REGMEM = {
-    0b000: {0b00: "[bx + si]", 0b01: "[bx + si]"},
-    0b001: {0b00: "[bx + di]", 0b01: "[bx + di]"},
-    0b010: {0b00: "[bp + si]", 0b01: "[bp + si]"},
-    0b011: {0b00: "[bp + di]", 0b01: "[bp + di]"},
-    0b100: {0b00: "[si]", 0b01: "[si]"},
-    0b101: {0b00: "[di]", 0b01: "[di]"},
-    0b110: {0b00: "NotImplemented", 0b01: "[bp + {}]"},
-    0b111: {0b00: "[bx]", 0b01: "[bx]"},
+    0b000: {0b00: "[bx + si]", 0b01: "[bx + si + {}]", 0b10: "[bx + si + {}]"},
+    0b001: {0b00: "[bx + di]", 0b01: "[bx + di + {}]", 0b10: "[bx + di + {}]"},
+    0b010: {0b00: "[bp + si]", 0b01: "[bp + si + {}]", 0b10: "[bp + si + {}]"},
+    0b011: {0b00: "[bp + di]", 0b01: "[bp + di + {}]", 0b10: "[bp + di + {}]"},
+    0b100: {0b00: "[si]", 0b01: "[si + {}]", 0b10: "[si + {}]"},
+    0b101: {0b00: "[di]", 0b01: "[di + {}]", 0b10: "[di + {}]"},
+    0b110: {0b00: "NotImplemented", 0b01: "[bp + {}]", 0b10: "[bp + {}]"},
+    0b111: {0b00: "[bx]", 0b01: "[bx + {}]", 0b10: "[bx + {}]"},
 }
 
 
-def mov(d, w, mod, reg, r_m, dist_lo=None, dist_hi=None):
+def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
     """Move register/memory to/from register."""
 
     if mod == 0b00:
@@ -34,13 +34,23 @@ def mov(d, w, mod, reg, r_m, dist_lo=None, dist_hi=None):
             dest = REGMEM[r_m][mod]
             src = REG[reg][w]
     elif mod == 0b01:
-        assert dist_lo is not None
+        assert disp_lo is not None
         if d == 1:
             dest = REG[reg][w]
-            src = REGMEM[r_m][mod].format(dist_lo)
+            src = REGMEM[r_m][mod].format(disp_lo)
         elif d == 0:
-            dest = REGMEM[r_m][mod].format(dist_lo)
+            dest = REGMEM[r_m][mod].format(disp_lo)
             src = REG[reg][w]
+    elif mod == 0b10:
+        assert disp_lo is not None
+        assert disp_hi is not None
+
+        # concatenate disp_hi and disp_lo
+        disp = (disp_hi << 8) | disp_lo
+
+        if d == 1:
+            dest = REG[reg][w]
+            src = REGMEM[r_m][mod].format(disp)
     elif mod == 0b11:
         if d == 1:
             dest = REG[reg][w]
