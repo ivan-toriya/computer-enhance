@@ -45,7 +45,7 @@ def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
         assert disp_lo is not None
         assert disp_hi is not None
 
-        # concatenate disp_hi and disp_lo
+        # "concatenate" disp_hi and disp_lo
         disp = (disp_hi << 8) | disp_lo
 
         if d == 1:

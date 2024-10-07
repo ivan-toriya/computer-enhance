@@ -5,6 +5,8 @@ OPCODES = {0b100010: mov}
 
 
 def decode(file: Path):
+    """Decoding instruction from a binary file."""
+
     with open(file, "rb") as f:
         data = f.read()
 
@@ -42,22 +44,5 @@ def decode(file: Path):
         print("=== OUTPUT ===")
         print(output)
         print("=== EOF ===")
-
-    # for i in range(0, len(data), 2):
-    #     print(format(data[i], "#010b"), format(data[i + 1], "#010b"))
-
-    #     opcode = data[i] >> 2
-    #     d = (data[i] >> 1) & 0b1
-    #     w = data[i] & 0b1
-    #     mod = data[i + 1] >> 6
-    #     reg = (data[i + 1] >> 3) & 0b111
-    #     r_m = data[i + 1] & 0b111
-
-    #     output += OPCODES[opcode](d, w, mod, reg, r_m)
-
-    #     print("^ decoded ^")
-    #     print("=== OUTPUT ===")
-    #     print(output)
-    #     print("=== EOF ===")
 
     return output
