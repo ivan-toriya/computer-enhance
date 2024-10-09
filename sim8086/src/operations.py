@@ -33,6 +33,7 @@ def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
         elif d == 0:
             dest = REGMEM[r_m][mod]
             src = REG[reg][w]
+
     elif mod == 0b01:
         assert disp_lo is not None
         if d == 1:
@@ -41,16 +42,16 @@ def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
         elif d == 0:
             dest = REGMEM[r_m][mod].format(disp_lo)
             src = REG[reg][w]
+
     elif mod == 0b10:
         assert disp_lo is not None
         assert disp_hi is not None
-
         # "concatenate" disp_hi and disp_lo
         disp = (disp_hi << 8) | disp_lo
-
         if d == 1:
             dest = REG[reg][w]
             src = REGMEM[r_m][mod].format(disp)
+
     elif mod == 0b11:
         if d == 1:
             dest = REG[reg][w]
@@ -61,4 +62,11 @@ def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
     else:
         raise NotImplementedError("The mode is not implemented.")
 
+    return f"mov {dest}, {src}\n"
+
+
+def imm_mov(w, reg, data):
+    """Immediate to register MOV."""
+    dest = REG[reg][w]
+    src = data
     return f"mov {dest}, {src}\n"

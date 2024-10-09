@@ -1,48 +1,64 @@
 from pathlib import Path
-from sim8086.src.operations import mov
+from sim8086.src.operations import mov, imm_mov
 
-OPCODES = {0b100010: mov}
+OPCODES = {0b100010: mov, 0b1011: imm_mov}
 
 
 def decode(file: Path):
-    """Decoding instruction from a binary file."""
+    """Decoding .asm instructions from an assembled binary file."""
 
     with open(file, "rb") as f:
-        data = f.read()
+        instuctions = f.read()
 
     output = f"; {file.name} disassembly:\n"
     output += "bits 16\n"
 
-    cursor = 0
-    while cursor < len(data):
-        print(format(data[cursor], "#010b"))
-        opcode = data[cursor] >> 2
-        d = (data[cursor] >> 1) & 0b1
-        w = data[cursor] & 0b1
-        print(format(data[cursor + 1], "#010b"))
-        mod = data[cursor + 1] >> 6
-        reg = (data[cursor + 1] >> 3) & 0b111
-        r_m = data[cursor + 1] & 0b111
+    p = 0
+    while p < len(instuctions):
+        print(format(instuctions[p], "#010b"))
 
-        if mod in [0b11, 0b00]:
-            output += OPCODES[opcode](d, w, mod, reg, r_m)
-            cursor += 2
-        elif mod == 0b01:
-            print(format(data[cursor + 2], "#010b"))
-            disp_lo = data[cursor + 2]
-            output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo)
-            cursor += 3
-        elif mod == 0b10:
-            print(format(data[cursor + 2], "#010b"))
-            disp_lo = data[cursor + 2]
-            print(format(data[cursor + 3], "#010b"))
-            disp_hi = data[cursor + 3]
-            output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo, disp_hi)
-            cursor += 4
+        if (opcode := instuctions[p] >> 4) == 0b1011:  # immediate to register
+            w = (instuctions[p] >> 3) & 0b1
+            reg = instuctions[p] & 0b111
 
-        print("^ decoded ^")
-        print("=== OUTPUT ===")
-        print(output)
-        print("=== EOF ===")
+            if w == 0:
+                print(format(instuctions[p + 1], "#010b"))
+                data = instuctions[p + 1]
+                p += 2
+            elif w == 1:
+                print(format(instuctions[p + 1], "#010b"), format(instuctions[p + 2], "#010b"))
+                data = (instuctions[p + 2] << 8) | instuctions[p + 1]
+                p += 3
+
+            output += OPCODES[opcode](w, reg, data)
+
+        elif (opcode := instuctions[p] >> 2) == 0b100010:  # reg/mem to/from reg
+            d = (instuctions[p] >> 1) & 0b1
+            w = instuctions[p] & 0b1
+            print(format(instuctions[p + 1], "#010b"))
+            mod = instuctions[p + 1] >> 6
+            reg = (instuctions[p + 1] >> 3) & 0b111
+            r_m = instuctions[p + 1] & 0b111
+
+            if mod in [0b11, 0b00]:
+                output += OPCODES[opcode](d, w, mod, reg, r_m)
+                p += 2
+            elif mod == 0b01:
+                print(format(instuctions[p + 2], "#010b"))
+                disp_lo = instuctions[p + 2]
+                output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo)
+                p += 3
+            elif mod == 0b10:
+                print(format(instuctions[p + 2], "#010b"))
+                disp_lo = instuctions[p + 2]
+                print(format(instuctions[p + 3], "#010b"))
+                disp_hi = instuctions[p + 3]
+                output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo, disp_hi)
+                p += 4
+
+            print("^ decoded ^")
+            print("=== OUTPUT ===")
+            print(output)
+            print("=== END ===")
 
     return output
