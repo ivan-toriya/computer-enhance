@@ -8,51 +8,51 @@ def decode(file: Path):
     """Decoding .asm instructions from an assembled binary file."""
 
     with open(file, "rb") as f:
-        instuctions = f.read()
+        instructions = f.read()
 
     output = f"; {file.name} disassembly:\n"
     output += "bits 16\n"
 
     p = 0
-    while p < len(instuctions):
-        print(format(instuctions[p], "#010b"))
+    while p < len(instructions):
+        print(format(instructions[p], "#010b"))
 
-        if (opcode := instuctions[p] >> 4) == 0b1011:  # immediate to register
-            w = (instuctions[p] >> 3) & 0b1
-            reg = instuctions[p] & 0b111
+        if (opcode := instructions[p] >> 4) == 0b1011:  # immediate to register
+            w = (instructions[p] >> 3) & 0b1
+            reg = instructions[p] & 0b111
 
             if w == 0:
-                print(format(instuctions[p + 1], "#010b"))
-                data = instuctions[p + 1]
+                print(format(instructions[p + 1], "#010b"))
+                data = instructions[p + 1]
                 p += 2
             elif w == 1:
-                print(format(instuctions[p + 1], "#010b"), format(instuctions[p + 2], "#010b"))
-                data = (instuctions[p + 2] << 8) | instuctions[p + 1]
+                print(format(instructions[p + 1], "#010b"), format(instructions[p + 2], "#010b"))
+                data = (instructions[p + 2] << 8) | instructions[p + 1]
                 p += 3
 
             output += OPCODES[opcode](w, reg, data)
 
-        elif (opcode := instuctions[p] >> 2) == 0b100010:  # reg/mem to/from reg
-            d = (instuctions[p] >> 1) & 0b1
-            w = instuctions[p] & 0b1
-            print(format(instuctions[p + 1], "#010b"))
-            mod = instuctions[p + 1] >> 6
-            reg = (instuctions[p + 1] >> 3) & 0b111
-            r_m = instuctions[p + 1] & 0b111
+        elif (opcode := instructions[p] >> 2) == 0b100010:  # reg/mem to/from reg
+            d = (instructions[p] >> 1) & 0b1
+            w = instructions[p] & 0b1
+            print(format(instructions[p + 1], "#010b"))
+            mod = instructions[p + 1] >> 6
+            reg = (instructions[p + 1] >> 3) & 0b111
+            r_m = instructions[p + 1] & 0b111
 
             if mod in [0b11, 0b00]:
                 output += OPCODES[opcode](d, w, mod, reg, r_m)
                 p += 2
             elif mod == 0b01:
-                print(format(instuctions[p + 2], "#010b"))
-                disp_lo = instuctions[p + 2]
+                print(format(instructions[p + 2], "#010b"))
+                disp_lo = instructions[p + 2]
                 output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo)
                 p += 3
             elif mod == 0b10:
-                print(format(instuctions[p + 2], "#010b"))
-                disp_lo = instuctions[p + 2]
-                print(format(instuctions[p + 3], "#010b"))
-                disp_hi = instuctions[p + 3]
+                print(format(instructions[p + 2], "#010b"))
+                disp_lo = instructions[p + 2]
+                print(format(instructions[p + 3], "#010b"))
+                disp_hi = instructions[p + 3]
                 output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo, disp_hi)
                 p += 4
         else:
