@@ -4,7 +4,7 @@ import subprocess
 
 
 from sim8086.src.instruction_decode import decode
-from sim8086.src.operations import mov
+from sim8086.src.operations import reg_mem_to_from_reg
 
 
 @pytest.fixture(
@@ -67,13 +67,13 @@ def test_decode(assembled_instruction_path, tmp_path):
 
 def test_mov_cx_bx(mov_cx_bx):
     d, w, mod, reg, rm = mov_cx_bx
-    output = mov(d, w, mod, reg, rm)
+    output = reg_mem_to_from_reg("mov", d, w, mod, reg, rm)
     assert output == "mov cx, bx\n"
 
 
 def test_mov_bx_cx(mov_bx_cx):
     d, w, mod, reg, rm = mov_bx_cx
-    output = mov(d, w, mod, reg, rm)
+    output = reg_mem_to_from_reg("mov", d, w, mod, reg, rm)
     assert output == "mov bx, cx\n"
 
 
@@ -81,4 +81,4 @@ def test_mov_mod_not_implemented(mov_cx_bx):
     d, w, mod, reg, rm = mov_cx_bx
     mod = 0b100
     with pytest.raises(NotImplementedError):
-        mov(d, w, mod, reg, rm)
+        reg_mem_to_from_reg("mov", d, w, mod, reg, rm)

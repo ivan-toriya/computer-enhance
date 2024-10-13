@@ -1,7 +1,5 @@
 from pathlib import Path
-from sim8086.src.operations import imm_to_reg_mem, mov, imm_mov
-
-OPCODES = {0b100010: mov, 0b1011: imm_mov}
+from sim8086.src.operations import imm_to_reg_mem, reg_mem_to_from_reg, imm_to_reg
 
 
 def decode(file: Path):
@@ -30,7 +28,7 @@ def decode(file: Path):
                 data = (instructions[p + 2] << 8) | instructions[p + 1]
                 p += 3
 
-            output += OPCODES[opcode](w, reg, data)
+            output += imm_to_reg(w, reg, data)
 
         elif (opcode := instructions[p] >> 2) == 0b100010:  # reg/mem to/from reg
             d = (instructions[p] >> 1) & 0b1
@@ -41,18 +39,18 @@ def decode(file: Path):
             r_m = instructions[p + 1] & 0b111
 
             if mod in [0b11, 0b00]:
-                output += OPCODES[opcode](d, w, mod, reg, r_m)
+                output += reg_mem_to_from_reg("mov", d, w, mod, reg, r_m)
                 p += 2
             elif mod == 0b01:
                 print(format(instructions[p + 2], "#010b"))
                 disp = instructions[p + 2]
-                output += OPCODES[opcode](d, w, mod, reg, r_m, disp)
+                output += reg_mem_to_from_reg("mov", d, w, mod, reg, r_m, disp)
                 p += 3
             elif mod == 0b10:
                 print(format(instructions[p + 2], "#010b"))
                 print(format(instructions[p + 3], "#010b"))
                 disp = (instructions[p + 3] << 8) | instructions[p + 2]
-                output += OPCODES[opcode](d, w, mod, reg, r_m, disp)
+                output += reg_mem_to_from_reg("mov", d, w, mod, reg, r_m, disp)
                 p += 4
         elif (opcode := instructions[p] >> 1) == 0b1100011:  # immediate to register/memory
             w = instructions[p] & 0b1

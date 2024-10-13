@@ -23,8 +23,8 @@ REGMEM = {
 }
 
 
-def mov(d, w, mod, reg, r_m, disp=None):
-    """Move register/memory to/from register."""
+def reg_mem_to_from_reg(op: str, d: int, w: int, mod: int, reg: int, r_m: int, disp: int | None = None):
+    """Register/memory to/from register."""
 
     if mod == 0b00:
         if d == 1:
@@ -64,8 +64,8 @@ def mov(d, w, mod, reg, r_m, disp=None):
     return f"mov {dest}, {src}\n"
 
 
-def imm_mov(w, reg, data):
-    """Immediate to register MOV."""
+def imm_to_reg(w, reg: int, data: int):
+    """Immediate to register."""
     dest = REG[reg][w]
     src = data
     return f"mov {dest}, {src}\n"
