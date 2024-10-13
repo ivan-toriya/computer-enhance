@@ -12,14 +12,14 @@ REG = {
 
 # R/M (Register/Memory) Field Encoding
 REGMEM = {
-    0b000: {0b00: "[bx + si]", 0b01: "[bx + si + {}]", 0b10: "[bx + si + {}]"},
-    0b001: {0b00: "[bx + di]", 0b01: "[bx + di + {}]", 0b10: "[bx + di + {}]"},
-    0b010: {0b00: "[bp + si]", 0b01: "[bp + si + {}]", 0b10: "[bp + si + {}]"},
-    0b011: {0b00: "[bp + di]", 0b01: "[bp + di + {}]", 0b10: "[bp + di + {}]"},
-    0b100: {0b00: "[si]", 0b01: "[si + {}]", 0b10: "[si + {}]"},
-    0b101: {0b00: "[di]", 0b01: "[di + {}]", 0b10: "[di + {}]"},
-    0b110: {0b00: "NotImplemented", 0b01: "[bp + {}]", 0b10: "[bp + {}]"},
-    0b111: {0b00: "[bx]", 0b01: "[bx + {}]", 0b10: "[bx + {}]"},
+    0b000: {0b00: "[bx + si]", 0b01: "[bx + si {0} {1}]", 0b10: "[bx + si {0} {1}]"},
+    0b001: {0b00: "[bx + di]", 0b01: "[bx + di {0} {1}]", 0b10: "[bx + di {0} {1}]"},
+    0b010: {0b00: "[bp + si]", 0b01: "[bp + si {0} {1}]", 0b10: "[bp + si {0} {1}]"},
+    0b011: {0b00: "[bp + di]", 0b01: "[bp + di {0} {1}]", 0b10: "[bp + di {0} {1}]"},
+    0b100: {0b00: "[si]", 0b01: "[si + {0} {1}]", 0b10: "[si {0} {1}]"},
+    0b101: {0b00: "[di]", 0b01: "[di + {0} {1}]", 0b10: "[di {0} {1}]"},
+    0b110: {0b00: "NotImplemented", 0b01: "[bp {0} {1}]", 0b10: "[bp {0} {1}]"},
+    0b111: {0b00: "[bx]", 0b01: "[bx {0} {1}]", 0b10: "[bx {0} {1}]"},
 }
 
 
@@ -36,11 +36,12 @@ def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
 
     elif mod == 0b01:
         assert disp_lo is not None
+        sign = "+"
         if d == 1:
             dest = REG[reg][w]
-            src = REGMEM[r_m][mod].format(disp_lo)
+            src = REGMEM[r_m][mod].format(sign, disp_lo)
         elif d == 0:
-            dest = REGMEM[r_m][mod].format(disp_lo)
+            dest = REGMEM[r_m][mod].format(sign, disp_lo)
             src = REG[reg][w]
 
     elif mod == 0b10:
@@ -48,9 +49,10 @@ def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
         assert disp_hi is not None
         # "concatenate" disp_hi and disp_lo
         disp = (disp_hi << 8) | disp_lo
+        sign = "+"
         if d == 1:
             dest = REG[reg][w]
-            src = REGMEM[r_m][mod].format(disp)
+            src = REGMEM[r_m][mod].format(sign, disp)
 
     elif mod == 0b11:
         if d == 1:
