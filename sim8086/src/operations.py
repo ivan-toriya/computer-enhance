@@ -72,3 +72,17 @@ def imm_mov(w, reg, data):
     dest = REG[reg][w]
     src = data
     return f"mov {dest}, {src}\n"
+
+
+def imm_to_reg_mem(*, operation: str, w, mod, r_m, disp=None, data):
+    """Immediate to register/memory."""
+    dest = REGMEM[r_m][mod]
+    if mod in [0b01, 0b10]:
+        sign = "+"
+        dest = REGMEM[r_m][mod].format(sign, disp)
+    if w == 0b0:
+        src = f"byte {data}"
+    elif w == 0b1:
+        src = f"word {data}"
+
+    return f"{operation} {dest}, {src}\n"

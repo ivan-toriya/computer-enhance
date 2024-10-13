@@ -13,6 +13,7 @@ from sim8086.src.operations import mov
         "listing_0037_single_register_mov.asm",
         "listing_0038_many_register_mov.asm",
         "listing_0039_more_movs.asm",
+        "listing_0040_challenge_movs.asm",
     ],
 )
 def assembled_instruction_path(request, tmp_path_factory):

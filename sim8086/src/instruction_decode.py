@@ -1,5 +1,5 @@
 from pathlib import Path
-from sim8086.src.operations import mov, imm_mov
+from sim8086.src.operations import imm_to_reg_mem, mov, imm_mov
 
 OPCODES = {0b100010: mov, 0b1011: imm_mov}
 
@@ -55,6 +55,61 @@ def decode(file: Path):
                 disp_hi = instructions[p + 3]
                 output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo, disp_hi)
                 p += 4
+        elif (opcode := instructions[p] >> 1) == 0b1100011:  # immediate to register/memory
+            w = instructions[p] & 0b1
+            print(format(instructions[p + 1], "#010b"))
+            mod = instructions[p + 1] >> 6
+            r_m = instructions[p + 1] & 0b111
+            if w == 0:
+                if mod == 0b00:
+                    if r_m != 0b110:
+                        data = instructions[p + 2]
+                        output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=None, data=data)
+                        p += 3
+                    else:
+                        disp = (instructions[p + 3] << 8) | instructions[p + 2]
+                        data = instructions[p + 4]
+                        output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=disp, data=data)
+                        p += 5
+                if mod == 0b01:
+                    disp = instructions[p + 2]
+                    data = instructions[p + 3]
+                    output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=disp, data=data)
+                    p += 4
+                if mod == 0b10:
+                    disp = (instructions[p + 3] << 8) | instructions[p + 2]
+                    data = instructions[p + 4]
+                    output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=disp, data=data)
+                    p += 5
+                if mod == 0b11:
+                    data = instructions[p + 2]
+                    output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=None, data=data)
+                    p += 3
+            if w == 1:
+                if mod == 0b00:
+                    if r_m != 0b110:
+                        data = (instructions[p + 3] << 8) | instructions[p + 2]
+                        output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=None, data=data)
+                        p += 4
+                    else:
+                        disp = (instructions[p + 3] << 8) | instructions[p + 2]
+                        data = (instructions[p + 5] << 8) | instructions[p + 4]
+                        output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=disp, data=data)
+                        p += 6
+                if mod == 0b01:
+                    disp = instructions[p + 2]
+                    data = (instructions[p + 4] << 8) | instructions[p + 3]
+                    output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=disp, data=data)
+                    p += 5
+                if mod == 0b10:
+                    disp = (instructions[p + 3] << 8) | instructions[p + 2]
+                    data = (instructions[p + 5] << 8) | instructions[p + 4]
+                    output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=disp, data=data)
+                    p += 6
+                if mod == 0b11:
+                    data = (instructions[p + 3] << 8) | instructions[p + 2]
+                    output += imm_to_reg_mem(operation="mov", w=w, mod=mod, r_m=r_m, disp=None, data=data)
+                    p += 4
         else:
             raise NotImplementedError("Opcode not implemented")
 
