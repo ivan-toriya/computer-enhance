@@ -23,7 +23,7 @@ REGMEM = {
 }
 
 
-def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
+def mov(d, w, mod, reg, r_m, disp=None):
     """Move register/memory to/from register."""
 
     if mod == 0b00:
@@ -35,20 +35,17 @@ def mov(d, w, mod, reg, r_m, disp_lo=None, disp_hi=None):
             src = REG[reg][w]
 
     elif mod == 0b01:
-        assert disp_lo is not None
+        assert disp is not None
         sign = "+"
         if d == 1:
             dest = REG[reg][w]
-            src = REGMEM[r_m][mod].format(sign, disp_lo)
+            src = REGMEM[r_m][mod].format(sign, disp)
         elif d == 0:
-            dest = REGMEM[r_m][mod].format(sign, disp_lo)
+            dest = REGMEM[r_m][mod].format(sign, disp)
             src = REG[reg][w]
 
     elif mod == 0b10:
-        assert disp_lo is not None
-        assert disp_hi is not None
-        # "concatenate" disp_hi and disp_lo
-        disp = (disp_hi << 8) | disp_lo
+        assert disp is not None
         sign = "+"
         if d == 1:
             dest = REG[reg][w]

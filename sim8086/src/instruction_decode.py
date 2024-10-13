@@ -45,15 +45,14 @@ def decode(file: Path):
                 p += 2
             elif mod == 0b01:
                 print(format(instructions[p + 2], "#010b"))
-                disp_lo = instructions[p + 2]
-                output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo)
+                disp = instructions[p + 2]
+                output += OPCODES[opcode](d, w, mod, reg, r_m, disp)
                 p += 3
             elif mod == 0b10:
                 print(format(instructions[p + 2], "#010b"))
-                disp_lo = instructions[p + 2]
                 print(format(instructions[p + 3], "#010b"))
-                disp_hi = instructions[p + 3]
-                output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo, disp_hi)
+                disp = (instructions[p + 3] << 8) | instructions[p + 2]
+                output += OPCODES[opcode](d, w, mod, reg, r_m, disp)
                 p += 4
         elif (opcode := instructions[p] >> 1) == 0b1100011:  # immediate to register/memory
             w = instructions[p] & 0b1
