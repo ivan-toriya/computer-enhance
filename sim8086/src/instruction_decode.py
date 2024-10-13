@@ -55,10 +55,12 @@ def decode(file: Path):
                 disp_hi = instuctions[p + 3]
                 output += OPCODES[opcode](d, w, mod, reg, r_m, disp_lo, disp_hi)
                 p += 4
+        else:
+            raise NotImplementedError("Opcode not implemented")
 
-            print("^ decoded ^")
-            print("=== OUTPUT ===")
-            print(output)
-            print("=== END ===")
+        print("^ decoded ^")
+        print("=== OUTPUT ===")
+        print(output)
+        print("=== END ===")
 
     return output
