@@ -58,20 +58,18 @@ def reg_mem_to_from_reg(op: str, d: int, w: int, mod: int, reg: int, r_m: int, d
         elif d == 0:
             dest = REG[r_m][w]
             src = REG[reg][w]
-    else:
-        raise NotImplementedError("The mode is not implemented.")
 
-    return f"mov {dest}, {src}\n"
+    return f"{op} {dest}, {src}\n"
 
 
-def imm_to_reg(w, reg: int, data: int):
+def imm_to_reg(op: str, w: int, reg: int, data: int):
     """Immediate to register."""
     dest = REG[reg][w]
     src = data
-    return f"mov {dest}, {src}\n"
+    return f"{op} {dest}, {src}\n"
 
 
-def imm_to_reg_mem(*, operation: str, w, mod, r_m, disp=None, data):
+def imm_to_reg_mem(op: str, w, mod, r_m, disp=None, *, data):
     """Immediate to register/memory."""
     dest = REGMEM[r_m][mod]
     if mod in [0b01, 0b10]:
@@ -82,4 +80,4 @@ def imm_to_reg_mem(*, operation: str, w, mod, r_m, disp=None, data):
     elif w == 0b1:
         src = f"word {data}"
 
-    return f"{operation} {dest}, {src}\n"
+    return f"{op} {dest}, {src}\n"
