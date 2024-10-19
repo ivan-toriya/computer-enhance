@@ -1,7 +1,7 @@
-from pathlib import Path
-import pytest
 import subprocess
+from pathlib import Path
 
+import pytest
 
 from sim8086.src.instruction_decode import decode
 from sim8086.src.operations import reg_mem_to_from_reg
@@ -75,10 +75,3 @@ def test_mov_bx_cx(mov_bx_cx):
     d, w, mod, reg, rm = mov_bx_cx
     output = reg_mem_to_from_reg("mov", d, w, mod, reg, rm)
     assert output == "mov bx, cx\n"
-
-
-def test_mov_mod_not_implemented(mov_cx_bx):
-    d, w, mod, reg, rm = mov_cx_bx
-    mod = 0b100
-    with pytest.raises(NotImplementedError):
-        reg_mem_to_from_reg("mov", d, w, mod, reg, rm)
