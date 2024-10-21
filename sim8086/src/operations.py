@@ -75,6 +75,7 @@ def imm_to_reg_mem(op: str, w, mod, r_m, disp=None, *, data):
     if mod in [0b01, 0b10]:
         sign = "+"
         dest = REGMEM[r_m][mod].format(sign, disp)
+    # TODO: Something is wrong here
     if w == 0b0:
         src = f"byte {data}"
     elif w == 0b1:

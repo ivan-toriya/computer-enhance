@@ -14,6 +14,7 @@ from sim8086.src.operations import reg_mem_to_from_reg
         "listing_0038_many_register_mov.asm",
         "listing_0039_more_movs.asm",
         "listing_0040_challenge_movs.asm",
+        # "listing_0041_add_sub_cmp_jnz.asm",
     ],
 )
 def assembled_instruction_path(request, tmp_path_factory):

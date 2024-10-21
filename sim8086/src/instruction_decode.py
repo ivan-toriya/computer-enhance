@@ -7,6 +7,9 @@ OPS = {
     0b100010: ("mov", reg_mem_to_from_reg),
     0b1100011: ("mov", imm_to_reg_mem),
     0b1011: ("mov", imm_to_reg),
+    # ADDs
+    0b000000: ("add", reg_mem_to_from_reg),
+    0b1000001: ("add", imm_to_reg_mem),
 }
 
 
