@@ -21,13 +21,13 @@ def decode(file: Path):
 
     p = 0
     while p < len(instructions):
-        print(format(instructions[p], "#010b"))
+        # print(format(instructions[p], "#010b"))
 
         if (opcode := instructions[p] >> 2) in OPS and OPS[opcode][1] == reg_mem_to_from_reg:  # reg/mem to/from reg
             op = OPS[opcode][0]
             d = (instructions[p] >> 1) & 0b1
             w = instructions[p] & 0b1
-            print(format(instructions[p + 1], "#010b"))
+            # print(format(instructions[p + 1], "#010b"))
             mod = instructions[p + 1] >> 6
             reg = (instructions[p + 1] >> 3) & 0b111
             r_m = instructions[p + 1] & 0b111
@@ -36,13 +36,13 @@ def decode(file: Path):
                 output += reg_mem_to_from_reg(op, d, w, mod, reg, r_m)
                 p += 2
             elif mod == 0b01:
-                print(format(instructions[p + 2], "#010b"))
+                # print(format(instructions[p + 2], "#010b"))
                 disp = instructions[p + 2]
                 output += reg_mem_to_from_reg(op, d, w, mod, reg, r_m, disp)
                 p += 3
             elif mod == 0b10:
-                print(format(instructions[p + 2], "#010b"))
-                print(format(instructions[p + 3], "#010b"))
+                # print(format(instructions[p + 2], "#010b"))
+                # print(format(instructions[p + 3], "#010b"))
                 disp = (instructions[p + 3] << 8) | instructions[p + 2]
                 output += reg_mem_to_from_reg(op, d, w, mod, reg, r_m, disp)
                 p += 4
@@ -53,11 +53,11 @@ def decode(file: Path):
             reg = instructions[p] & 0b111
 
             if w == 0:
-                print(format(instructions[p + 1], "#010b"))
+                # print(format(instructions[p + 1], "#010b"))
                 data = instructions[p + 1]
                 p += 2
             elif w == 1:
-                print(format(instructions[p + 1], "#010b"), format(instructions[p + 2], "#010b"))
+                # print(format(instructions[p + 1], "#010b"), format(instructions[p + 2], "#010b"))
                 data = (instructions[p + 2] << 8) | instructions[p + 1]
                 p += 3
 
@@ -68,7 +68,7 @@ def decode(file: Path):
         ] == imm_to_reg_mem:  # immediate to register/memory
             op = OPS[opcode][0]
             w = instructions[p] & 0b1
-            print(format(instructions[p + 1], "#010b"))
+            # print(format(instructions[p + 1], "#010b"))
             mod = instructions[p + 1] >> 6
             r_m = instructions[p + 1] & 0b111
             if w == 0:
@@ -124,9 +124,9 @@ def decode(file: Path):
         else:
             raise NotImplementedError("Opcode not implemented")
 
-        print("^ decoded ^")
-        print("=== OUTPUT ===")
-        print(output)
-        print("=== END ===")
+        # print("^ decoded ^")
+        # print("=== OUTPUT ===")
+        # print(output)
+        # print("=== END ===")
 
     return output
